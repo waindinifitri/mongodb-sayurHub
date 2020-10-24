@@ -26,24 +26,29 @@ mongoose.connect(mongoURI, options);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "Connection Error"));
-db.once("open", () => console.log("Connected to mongodb!"));
+db.once("open", () => console.log("Successfully connected to mongodb!"));
 
 // routes
 const indexRoutes = require("./routes/index")
-const userRoutes = require("./routes/user");
-const transactionRoutes = require("/routes/transaction");
-const paymentRoutes = require("/routes/payment");
-const productRoutes = require("/routes/product");
+const userRoutes = require("./routes/users");
+const productRoutes = require("./routes/products");
+const transactionRoutes = require("./routes/transactions");
+const cartRoutes = require("./routes/carts");
+const paymentRoutes = require("./routes/paymentStripe");
+const notificationRoutes = require("./routes/notifications");
+
 const errorHandler = require("./middlewares/errorHandler");
 
 app.use("/", indexRoutes);
-app.use("/user", userRoutes);
-app.use("/transaction", transactionRoutes);
+app.use("/users", userRoutes);
+app.use("/transactions", transactionRoutes);
+app.use("/carts", cartRoutes);
 app.use("/payment", paymentRoutes);
-app.use("/product", productRoutes)
+app.use("/products", productRoutes);
+app.use("/notifications", notificationRoutes);
 app.use(errorHandler);
 
 // server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Listening to ${PORT}`));
+app.listen(PORT, () => console.log(`Brought you to localhost : ${PORT}`));
 

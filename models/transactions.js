@@ -4,31 +4,29 @@ const { Schema} =  mongoose;
 
 const transactionSchema = new Schema(
   {
-  userId : { 
-    type : Integer,
-    require : true,
-  },
   products : {
     type : String,
-    require : true,
+    required : true,
     trim : false,
   },
   count : {
-    type : Integer,
-    default : " "
+    type : Number,
+    default : "",
   },
   status : { 
     type : String,
-    default : "On process"
+    required: true,
+    enum: ['Success','On Process','Cancelled']
   },
-  product: { type: Schema.Types.ObjectId, ref: "Product", default: null },
+  deliveries : {
+    type : String,
+    required : true,
+    default : "",
+  },
+  //product: { type: Schema.Types.ObjectId, ref: "Product", default: null },
   user: { type: Schema.Types.ObjectId, ref: "User", default: null },
 }, { timestamps: true, versionKey: false })
 
-
-
-// unique validator
-// transactionSchema.plugin(uniqueValidator);
 const transaction = mongoose.model("Transaction", transactionSchema);
 
 exports.Transaction = transaction;

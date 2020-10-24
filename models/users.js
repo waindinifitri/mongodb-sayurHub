@@ -36,10 +36,10 @@ const userSchema = new Schema({
   },
   transactions : { 
     type : String,
-    default : "On progress"
+    default : "",
   },
-  product: [{ type: Schema.Types.ObjectId, ref: "Product", default: null }],
-  transaction: { type: Schema.Types.ObjectId, ref: "Transaction", default: null },
+  // product: [{ type: Schema.Types.ObjectId, ref: "Product", default: null }],
+  // transaction: { type: Schema.Types.ObjectId, ref: "Transaction", default: null },
 }, { timestamps: true, versionKey: false })
 
 // pre, post hooks

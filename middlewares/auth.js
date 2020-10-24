@@ -1,7 +1,7 @@
 const { tokenVerifier } = require("../helpers/jwt");
 
 exports.Authentication = (req, res, next) => {
-  const token = req.headers.authorization;
+  const token = req.headers.token;
 
   if (!token) {
     res.status(400).json({

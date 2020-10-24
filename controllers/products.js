@@ -1,31 +1,33 @@
-const { Product } = require ('../models/product');
-const { User } = require('../models/user');
+const { Product } = require ('../models/products');
+const { User } = require('../models/users');
 
 exports.Create = async (req, res, next) => {
     try {
         let obj = {};
-        const {product_name, description, category, price, discount, stock, weight, product_image, question} = req.body;
+        
+        const {product_name, description, category, price, discount, stock, weight, question} = req.body;
+        const product_image = req.file.path;
         let actualPrice = parseFloat(price - ((discount*price)/100));
         // let categoryProduct = ("Fruit" || "Vegetables" || "Diet")
 
         //checking data input
         if(product_name) obj.product_name = product_name;
         if(description) obj.description = description;
-        if(category) obj.category = categoryProduct;
+        if(category) obj.category = category;
         if(discount) obj.discount = discount;
         if(price) obj.price = actualPrice; 
         if(stock) obj.stock = stock;
         if(weight) obj.weight = weight;
-        if(req.file && req.file.fieldname && req.file.path) obj.product_image = req.file.path;
-        // if(question) obj.question = question;
+        if(req.file && req.file.fieldname && req.file.path) obj.product_image = product_image;
+        if(question) obj.question = question;
         
-        // let categoryProduct = ("Fruit" || "Vegetables" || "Diet")
-        // if(category==!categoryProduct){
-        //     res.status(404).json({
-        //         status: "failed",
-        //         msg: "Category must be either Fruit or Vegetables or Diet"
-        //     })
-        // }
+        let categoryProduct = ("Fruit" || "Vegetables" || "Diet")
+        if(category==!categoryProduct){
+            res.status(404).json({
+                status: "failed",
+                msg: "Category must be either Fruit or Vegetables or Diet"
+            })
+        }
         
         let product = await Product.create(obj);
         console.log(product);
@@ -35,6 +37,7 @@ exports.Create = async (req, res, next) => {
             product
         })
     } catch (err) {
+        console.log(err);
         next(err)
     }
 }

@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken");
 const secretKey = "2020";
 
-const tokenGenerator = (users) => {
-  console.log(users, "--user");
-  const { email, role, id } = users;
+const tokenGenerator = (user) => {
+  console.log(user, "--user");
+  const { email, _id } = user;
 
   return jwt.sign(
     {
       email,
-      id
+      _id
     },
     secretKey
   );

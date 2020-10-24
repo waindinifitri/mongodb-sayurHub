@@ -1,34 +1,32 @@
-const { User } = require("../models/user");
+const { User } = require("../models/users");
 const {decryptPwd} = require('../helpers/bcrypt')
 const {tokenGenerator} = require('../helpers/jwt')
 
 exports.Register = async (req, res, next) => {
-	const { full_name, email, password } = req.body;
-	try {
-		let found = await User.findOne({
-			where: {
-				email
-			}
-		})
-		if (found) {
-			res.status(409),json({
-				message: "Thats email already registered! input another email account, please!"
-			})
-		} else {
-		let data = await User.create(req.body);
-  
+	const {email,full_name,password} = req.body
+	try {	
+	const found = await User.findOne({email})
+	if (found){
+		res.status (400).json({message : "email has been registered!"})
+	}
+	else {
+	  const data = await User.create({
+		  full_name,
+		  email, 
+		  password
+	  });
 	  res.status(201).json({
 		success: true,
-		message: "Successfully registered!",
+		message: "Successfully create a user!",
 		data,
-	  });
-	}
+	  });}
 	} catch (err) {
 	  next(err);
 	}
   };
   
   exports.Login = async (req, res, next) => {
+
 	try {
 	  const { email, password } = req.body;
   
@@ -36,9 +34,9 @@ exports.Register = async (req, res, next) => {
   
 	  if (!user)
 		return next({
-		  message: `User with email:${email} is not found!`,
+		  message: `User  email or password is not registered `,
 		});
-  
+		
 	  if (decryptPwd(password, user.password)) {
 		const token = tokenGenerator(user);
   
@@ -47,10 +45,6 @@ exports.Register = async (req, res, next) => {
 		  message: "Successfully logged in!",
 		  token: token,
 		});
-	  } else {
-		res.status(409).json({
-			msg: "Incorrect password!"
-		  })
 	  }
 	} catch (err) {
 	  res.status(500).json({
@@ -97,7 +91,7 @@ exports.Register = async (req, res, next) => {
 	  
 	  res.status(200).json({
 		success: true,
-		message: "Successfully update a user!",
+		message: "Successfully updated your profile!",
 		data: updatedData,
 	  });
 	} catch (err) {

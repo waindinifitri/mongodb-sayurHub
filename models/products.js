@@ -5,19 +5,19 @@ const productSchema = new Schema(
     {
         product_name: {
             type: String,
-            require: true
+            required: true
         },
         description: {
             type: String,
-            require: true
+            required: true
         },
         category: {
             type: String,
-            require: true
+            required: true
         },    
         price: {
             type: Number,
-            require: true,
+            required: true,
             min: [100, 'The product price is too low.'],
             max: [1000000000, 'Please put reasonable price.'],
             trim: true
@@ -30,24 +30,24 @@ const productSchema = new Schema(
         },    
         stock: {
             type: Number,
-            require: true,
+            required: true,
             min: [5, 'Too few products!'],
             max: [100, 'Too many products!']
         },
         weight: {
             type: Number,
-            require: true,
+            required: true,
             min: [1, 'Weight is too low!']
         },   
         product_image: {
             type: String,
-            require: true
+            required: true
         },    
         question: {
             type: String,
             // default:
         },
-        //Relation to Review Transaction Payment Cart
+        transaction: { type: Schema.Types.ObjectId, ref: "Transaction", default: null },
     },
     {
         timestamps: true
