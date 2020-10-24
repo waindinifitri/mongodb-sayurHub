@@ -13,7 +13,8 @@ const productSchema = new Schema(
         },
         category: {
             type: String,
-            required: true
+            required: true,
+            enum : ['Fruit', 'Vegetables', 'Diet']
         },    
         price: {
             type: Number,
@@ -21,13 +22,21 @@ const productSchema = new Schema(
             min: [100, 'The product price is too low.'],
             max: [1000000000, 'Please put reasonable price.'],
             trim: true
+        },
+        actualPrice: {
+            type: Number,
+            // default: 0,
+            required: [true, 'The actual price is price after discount. Please input "0" in the column.'],
+            // min: [100, 'The product price is too low.'],
+            // max: [1000000000, 'Please put reasonable price.'],
+            // trim: true
         },   
         discount: {
             type: Number,
             default: 0,
             max: 100,
             trim: true
-        },    
+        }, 
         stock: {
             type: Number,
             required: true,
@@ -43,11 +52,11 @@ const productSchema = new Schema(
             type: String,
             required: true
         },    
-        question: {
-            type: String,
-            // default:
-        },
-        transaction: { type: Schema.Types.ObjectId, ref: "Transaction", default: null },
+        user: { 
+            type: Schema.Types.ObjectId, 
+            ref: "User", 
+            default: null
+        }
     },
     {
         timestamps: true
