@@ -1,6 +1,7 @@
 const { Transaction } = require("../models/transactions");
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.Server_key);
+//const mongoose = require('mongoose');
 
 exports.stripeCharge = async (req, res, next) => {
 	try {

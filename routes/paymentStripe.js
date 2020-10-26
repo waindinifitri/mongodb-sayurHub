@@ -6,6 +6,6 @@ const { Authentication } = require("../middlewares/auth");
 
 router.post("/charge",Authentication, paymentStripeController.stripeCharge);
 router.post("/method",Authentication, paymentStripeController.PaymentMethod);
-router.get("/retrieve", Authentication, paymentStripeController.Retrieve);
+router.post("/retrieve", Authentication, paymentStripeController.Retrieve);
 
 module.exports = router;
