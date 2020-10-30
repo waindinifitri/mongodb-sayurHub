@@ -52,6 +52,15 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.post("save", async function (next) {
+  let user = this;
+
+  if (user.password && user.isModified("password")) {
+    user.password = await encryptPwd(user.password);
+  }
+  next();
+});
+
 // unique validator
 userSchema.plugin(uniqueValidator);
 const user = mongoose.model("User", userSchema);

@@ -9,39 +9,47 @@ exports.AddCart = async (req, res) => {
   const itemsObject = { productId, quantity, subTotal };
   items.push(itemsObject);
 
-  const id = req.userData.id; //TODO: the logged in user id
+  const id = req.userData.id;
   let userId = await User.findOne({ _id: id });
-  // let cart = await Cart.findOne({ userId });
-  // console.log(cart);
   try {
     let cart = await Cart.findOne({ userId });
-
     if (cart) {
-      //cart exists for user
-      let itemIndex = cart.products.findIndex((p) => p.productId == productId);
-
+      let itemIndex = cart.products.findIndex((p) => p.productId == productId); //cart exists for user
       if (itemIndex > -1) {
-        //product exists in the cart, update the quantity
-        let productItem = cart.products[itemIndex];
+        let productItem = cart.products[itemIndex]; //product exists in the cart, update the quantity
         productItem.quantity = quantity;
         cart.products[itemIndex] = productItem;
-        //total
-
+        subTotal = quantity*price;
       } else {
-        //product does not exists in cart, add new item
-        cart.products.push(itemsObject);
-
-        // count subtotal dan total
+        cart.products.push(itemsObject); //product does not exists in cart, add new item
+        cart.save(err, data => {
+              res.json(cart);
+        })
+        subTotal = products(quantity*price) 
       }
-
       cart = await cart.save();
       return res.status(201).send(cart);
     } else {
-      //no cart for user, create new cart;
+      // count subtotal dan total
       // cart.Total = cart.products
       //   .map((product) => product.subTotal)
       //   .reduce((acc, next) => acc + next);
-      let Total = 0;
+      //.map
+      function subTotal(products) {
+        return products.map((product) => {
+          return product * quantity
+        })
+      }
+      subTotal([cart.products])
+      // .reduce => Array.protoype.reduce((accumulator, currentValue) => {}, initialValue)
+      function getSum(subTotal) {
+        return subTotal.reduce((acc, currVal) => {
+          return acc + currVal
+        }, 0)
+      }
+      getSum([subTotal])
+
+      let Total = 0; //no cart for user, create new cart;
       items.forEach((el) => {
         Total += el.subTotal;
       });
@@ -58,83 +66,6 @@ exports.AddCart = async (req, res) => {
   }
 };
 
-//  exports.addItemToCart = async (req, res) => {
-//         const {productId} = req.body;
-//         const quantity = Number.parseInt(req.body.quantity);
-
-//         try {
-//             let cart = await Cart.find().populate({
-//                 path: "products.productId",
-//                 select: "product_name price total"
-//             })
-//             let productDetails = await Product.findById (productId);
-//             if (!productDetails) {
-//                 return res.status(500).json({
-//                     type: "Not Found",
-//                     msg: "Invalid request"
-//                 })
-//             }
-//             //--If cart exists ----
-//             if (cart && cart.products && cart.products.length ) {
-//                 //---- Check if index exists ----
-//                 const indexFound = cart.products.findIndex(product => product.productId.id == productId);
-//                 //------This removes an product from the the cart if the quantity is set to zero, We can use this method to remove an product from the list  -------
-//                 if (indexFound !== -1 && quantity <= 0) {
-//                     cart.products.splice(indexFound, 1);
-//                     if (cart.products.length == 0) {
-//                         cart.subTotal = 0;
-//                     } else {
-//                cart.subTotal = cart.products.map((product) => product.total).reduce((acc, next) => acc + next);
-//                     }
-//                 }
-//                 //----------Check if product exist, just add the previous quantity with the new quantity and update the total price-------
-//                 else if (indexFound !== -1) {
-//                     cart.products[indexFound].quantity = cart.products[indexFound].quantity + quantity;
-//                     cart.products[indexFound].total = cart.products[indexFound].quantity * productDetails.price;
-//                     cart.products[indexFound].price = productDetails.price
-//                     cart.subTotal = cart.products.map(product => product.total).reduce((acc, next) => acc + next);
-//                 }
-//                 //----Check if quantity is greater than 0 then add product to products array ----
-
-//                 //----If quantity of price is 0 throw the error -------
-//                 else {
-//                     return res.status(400).json({
-//                         type: "Invalid",
-//                         msg: "Invalid request"
-//                     })
-//                 }
-//                 let data = await cart.save();
-//                 res.status(200).json({
-//                     type: "success",
-//                     mgs: "Process Successful",
-//                     data: data
-//                 })
-//             }
-//             else  {
-//                 cart.products.push({
-//                     productId: productId,
-//                     quantity: quantity,
-//                     price: productDetails.price,
-//                     total: parseInt(productDetails.price * quantity)
-//                 })
-//                 cart.subTotal = cart.products.map(product => product.total).reduce((acc, next) => acc + next);
-//             }
-//             let data = await cart.save();
-//             res.status(200).json({
-//                 type: "success",
-//                 mgs: "Process Successful",
-//                 data: data
-//             })
-
-//         } catch (err) {
-//             console.log(err)
-//             res.status(400).json({
-//                 type: "Invalid",
-//                 msg: "Something Went Wrong",
-//                 err: err
-//             })
-//         }
-//     }
     exports.getCart = async (req, res) => {
         try {
             let cart = await Cart.find().populate({
@@ -188,3 +119,45 @@ exports.AddCart = async (req, res) => {
 //     cart.products = []
 //     if (cart && cart.product && !cart.products.length) {
 //     cart.products = []
+exports.Edit = async (req, res, next) => {
+	try {
+	  const { id } = req.params;
+	  if (!id) return next({ message: "Missing ID Params" });
+  
+	  const updatedData = await Cart.findOneAndUpdate(
+		id,
+		{ $set: req.body },
+		{ new: true }
+	  );
+	  
+	  res.status(200).json({
+		success: true,
+		message: "Successfully update a transaction!",
+		data: updatedData,
+	  });
+	} catch (err) {
+	  next(err);
+	}
+  };
+  
+  exports.Delete = async (req, res, next) => {
+	try {
+	  const { id } = req.params;
+  
+	  if (!id) return next({ message: "Missing ID Params" });
+  
+	  await Cart.findOneAndRemove(id, (error, doc, result) => {
+		if (error) throw "Failed to delete";
+		if (!doc)
+		  return res.status(400).json({ success: false, err: "Transaction not found!" });
+  
+		res.status(200).json({
+		  success: true,
+		  message: "Successfully delete transaction data!",
+		  data: doc,
+		});
+	  });
+	} catch (err) {
+	  next(err);
+	}
+  };

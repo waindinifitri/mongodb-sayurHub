@@ -35,6 +35,7 @@ const productRoutes = require("./routes/products");
 const transactionRoutes = require("./routes/transactions");
 const cartRoutes = require("./routes/carts");
 const paymentRoutes = require("./routes/paymentStripe");
+const deliveryRoutes = require("./routes/delivery");
 const notificationRoutes = require("./routes/notifications");
 
 const errorHandler = require("./middlewares/errorHandler");
@@ -45,6 +46,7 @@ app.use("/transactions", transactionRoutes);
 app.use("/carts", cartRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/products", productRoutes);
+app.use("/delivery", deliveryRoutes);
 app.use("/notifications", notificationRoutes);
 app.use(errorHandler);
 
